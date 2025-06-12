@@ -12,69 +12,94 @@ public class GameController : MonoBehaviour
 
 
     // UI
-    // player score
-    public TMP_Text playerScore;
+    // game over screen
+    public GameObject gameOverScreen;
 
-    // player hi score
-    public TMP_Text playerHiScore;
+    // player score text
+    public TMP_Text playerScoreText;
 
-    // player lives
-    public TMP_Text playerLives;
+    // player hi score text
+    public TMP_Text playerHiScoreText;
+
+    // player lives text
+    public TMP_Text playerLivesText;
+
+    // game over text
+    public TMP_Text gameOverText;
 
 
     // the speed at which targets are spawned
     private float targetSpawnRate = 1f;
 
-    // the number of targets to spawn
-    private int numberOfTargets = 50;
-
     // player's score
-    public int score = 0;
+    public int score;
 
     // player's hi score
     public int hiScore = 0;
 
     // player lives
-    public int lives = 3;
+    public int lives;
+
+    // if game is running
+    public bool gameIsActive;
 
 
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
-        InitialiseGame();
-
-        StartCoroutine(SpawnTarget());
+        // start / restart the game
+        RestartGame();
     }
 
 
-    // Update is called once per frame
-    void Update()
+    public void RestartGame()
     {
-      
+        // deactive the game over screen
+        //gameOverScreen.SetActive(false);
+
+        // the game over screen is deactivated through the
+        // button's on-click function in the inspector
+
+        // initialise the game
+        InitialiseGame();
+
+        // start spawning some targets
+        StartCoroutine(SpawnTarget());
     }
 
 
     public void InitialiseGame()
     {
+        // update score
+        score = 0;
+
         Score();
 
+        // update lives
+        lives = 3;
+
         Lives();
+
+        // start playing game
+        gameIsActive = true;
     }
 
 
     private IEnumerator SpawnTarget()
     {
-        while (numberOfTargets > 0)
+        // while the game is running
+        while (gameIsActive)
         {
+            // wait before spawning a target
             yield return new WaitForSeconds(targetSpawnRate);
 
+            // select a random target to spawn
             int targetIndex = Random.Range(0, targets.Count);
 
+            // and spawn it
             Instantiate(targets[targetIndex]);
-
-            numberOfTargets--;
         }
     }
 
@@ -85,7 +110,7 @@ public class GameController : MonoBehaviour
 
         //Debug.Log("SCORE: " + score);
 
-        playerScore.text = score.ToString();
+        playerScoreText.text = score.ToString();
     }
 
 
@@ -95,7 +120,7 @@ public class GameController : MonoBehaviour
 
         //Debug.Log("SCORE: " + score);
 
-        playerLives.text = lives.ToString();
+        playerLivesText.text = lives.ToString();
     }
 
 
@@ -103,7 +128,13 @@ public class GameController : MonoBehaviour
     public void GameOver()
     {
         // display game over
-        Debug.Log("G A M E  O V E R");
+        //Debug.Log("G A M E  O V E R");
+
+        // stop playing game
+        gameIsActive = false;
+
+        // display the game over screen
+        gameOverScreen.SetActive(true);
     }
 
 

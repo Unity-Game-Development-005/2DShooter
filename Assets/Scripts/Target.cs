@@ -135,31 +135,57 @@ private void NewTarget()
     }
 
 
+    private void UpdateScore()
+    {
+        // increase player's score
+        gameController.score += targetPoints;
+
+        // update the ui
+        gameController.Score();
+    }
+
+
+    private void UpdateLives()
+    {
+        // decrease player's lives
+        gameController.lives--;
+
+        // update the ui
+        gameController.Lives();
+    }
+
+
     // if the player clicks on a target
     private void OnMouseDown()
-    {  
-        // and the target is a good target
-        if (gameObject.CompareTag("Good"))
+    {
+        // if the game is running
+        if (gameController.gameIsActive)
         {
-            // increase player's score
-            gameController.score += targetPoints;
+            // and the target is a good target
+            if (gameObject.CompareTag("Good"))
+            {
+                UpdateScore();
+            }
 
-            // update the ui
-            gameController.Score();
+            // but if the target is a bad target
+            if (gameObject.CompareTag("Bad"))
+            {
+                UpdateLives();
+            }
+
+            // destroy the target
+            Destroy(gameObject);
+
+            // show a particle effect
+            Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+
+            // see if we have any lives left
+            if (gameController.lives == 0)
+            {
+                // if we don't, then display the game over screen
+                gameController.GameOver();
+            }
         }
-
-        // but if the target is a bad target
-        if (gameObject.CompareTag("Bad"))
-        {
-            // display game game
-            gameController.GameOver();
-        }
-
-        // destroy the target
-        Destroy(gameObject);
-
-        // show a particle effect
-        Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
     }
 
 

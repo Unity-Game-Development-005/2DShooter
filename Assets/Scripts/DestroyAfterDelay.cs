@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 public class DestroyAfterDelay : MonoBehaviour
 {
@@ -10,9 +12,12 @@ public class DestroyAfterDelay : MonoBehaviour
         Destroy(gameObject, 2);
     }
 
+
     // Update is called once per frame
     void Update()
     {
         
     }
-}
+
+
+} // end of class
