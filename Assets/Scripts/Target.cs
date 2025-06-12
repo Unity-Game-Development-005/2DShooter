@@ -4,30 +4,41 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
+    // get a reference to the game controller script
+    private GameController gameController;
+
     // get a reference to the target rigidbody component
     private Rigidbody targetRb;
 
 
+    // target parameters
     // minimum target speed
-    private float minTargetSpeed = 12f;
+    private float minTargetSpeed;
 
     // maximum target speed
-    private float maxTargetSpeed = 16f;
+    private float maxTargetSpeed;
 
     // minimum target torque
-    private float minTargetTorque = -10f;
+    private float minTargetTorque;
 
     // maximum target torque
-    private float maxTargetTorque = 10f;
+    private float maxTargetTorque;
 
     // target minimum spawn position x
-    private float minTargetSpawnRangeX = -4f;
+    private float minTargetSpawnRangeX;
 
     // target maximum spawn position x
-    private float maxTargetSpawnRangeX = 4f;
+    private float maxTargetSpawnRangeX;
 
     // target spawn position y
-    private float targetSpawnPosY = -6;
+    private float targetSpawnPosY;
+
+    // target points
+    public int targetPoints;
+
+
+    // particle effect to show on destroying target
+    public ParticleSystem explosionParticle;
 
 
 
@@ -35,8 +46,14 @@ public class Target : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // set reference to game controller script
+        gameController = GameObject.Find("Game Controller").GetComponent<GameController>();
+
         // set reference to the target rigidbody
         targetRb = GetComponent<Rigidbody>();
+
+        // initialise target parameters
+        InitialiseTargetParameters();
 
         // spawn a new target
         NewTarget();
@@ -50,15 +67,40 @@ public class Target : MonoBehaviour
     }
 
 
-    private void NewTarget()
+    private void InitialiseTargetParameters()
     {
-        InitialiseTarget();
+        // minimum target speed
+        minTargetSpeed = 12f;
+
+        // maximum target speed
+        maxTargetSpeed = 16f;
+
+        // minimum target torque
+        minTargetTorque = -10f;
+
+        // maximum target torque
+        maxTargetTorque = 10f;
+
+        // target minimum spawn position x
+        minTargetSpawnRangeX = -4f;
+
+        // target maximum spawn position x
+        maxTargetSpawnRangeX = 4f;
+
+        // target spawn position y
+        targetSpawnPosY = -6;
+    }
+
+
+private void NewTarget()
+    {
+        SetTargetParameters();
 
         SpawnTarget();
     }
 
 
-    private void InitialiseTarget()
+    private void SetTargetParameters()
     {
         targetRb.AddForce(RandomForce(), ForceMode.Impulse);
 
@@ -95,9 +137,29 @@ public class Target : MonoBehaviour
 
     // if the player clicks on a target
     private void OnMouseDown()
-    {   
+    {  
+        // and the target is a good target
+        if (gameObject.CompareTag("Good"))
+        {
+            // increase player's score
+            gameController.score += targetPoints;
+
+            // update the ui
+            gameController.Score();
+        }
+
+        // but if the target is a bad target
+        if (gameObject.CompareTag("Bad"))
+        {
+            // display game game
+            gameController.GameOver();
+        }
+
         // destroy the target
         Destroy(gameObject);
+
+        // show a particle effect
+        Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
     }
 
 
