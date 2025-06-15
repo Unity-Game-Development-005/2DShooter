@@ -13,11 +13,4 @@ public class DestroyAfterDelay : MonoBehaviour
     }
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
 } // end of class

@@ -12,6 +12,15 @@ public class GameController : MonoBehaviour
 
 
     // UI
+    // title screen
+    public GameObject titleScreen;
+
+    // difficulty screen
+    public GameObject optionsScreen;
+
+    // pawz screen
+    public GameObject pawzScreen;
+
     // game over screen
     public GameObject gameOverScreen;
 
@@ -29,7 +38,7 @@ public class GameController : MonoBehaviour
 
 
     // the speed at which targets are spawned
-    private float targetSpawnRate = 1f;
+    public float targetSpawnRate;
 
     // player's score
     public int score;
@@ -41,27 +50,97 @@ public class GameController : MonoBehaviour
     public int lives;
 
     // if game is running
-    public bool gameIsActive;
+    //public bool gameIsActive;
+    public bool gameOver;
+
+    // are we playing the game
+    public bool gamePawzed;
+
+    // is the game in play
+    public bool inPlay;
 
 
 
 
-    
+
     void Start()
     {
-        // start / restart the game
-        RestartGame();
+        LoadTitleScreen();
+    }
+
+
+
+    private void Update()
+    {
+        // if the game is in play
+        if (inPlay)
+        {
+            // and the game is not already pawzed
+            if (!gamePawzed)
+            {
+                // and the player has pressed the escape key
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    PawzGame();
+                }
+            }
+        }
+    }
+
+
+    private void PawzGame()
+    {
+        // pawz the game
+        gamePawzed = true;
+
+        // load the pawz screen
+        pawzScreen.SetActive(true);
+
+        // and freeze game play
+        Time.timeScale = 0f;
+    }
+
+
+    public void ResumeGame()
+    {
+        // un-pawz the game
+        gamePawzed = false;
+
+        // close the pawz screen
+        pawzScreen.SetActive(false);
+
+        // and un-freeze game play
+        Time.timeScale = 1f;
+    }
+
+
+    public void LoadTitleScreen()
+    {
+        // if the back button is pressed from the options screen
+        // then close the options screen
+        optionsScreen.SetActive(false);
+
+        // load the title screen
+        titleScreen.gameObject.SetActive(true);
+    }
+
+
+    // when the play button is pressed
+    public void SelectDifficulty()
+    {
+        // close the title screen
+        titleScreen.SetActive(false);
+
+        // close the game over screen
+        gameOverScreen.SetActive(false);
+
+        // load the difficulty screen
+        optionsScreen.SetActive(true);
     }
 
 
     public void RestartGame()
     {
-        // deactive the game over screen
-        //gameOverScreen.SetActive(false);
-
-        // the game over screen is deactivated through the
-        // button's on-click function in the inspector
-
         // initialise the game
         InitialiseGame();
 
@@ -82,15 +161,21 @@ public class GameController : MonoBehaviour
 
         Lives();
 
+        // the speed at which targets are spawned
+        targetSpawnRate = 1f;
+
         // start playing game
-        gameIsActive = true;
+        gameOver = false;
+
+        // game is in play
+        inPlay = true;
     }
 
 
     private IEnumerator SpawnTarget()
     {
         // while the game is running
-        while (gameIsActive)
+        while (inPlay)
         {
             // wait before spawning a target
             yield return new WaitForSeconds(targetSpawnRate);
@@ -106,20 +191,25 @@ public class GameController : MonoBehaviour
 
     public void Score()
     {
-        //score++;
-
-        //Debug.Log("SCORE: " + score);
-
         playerScoreText.text = score.ToString();
+    }
+    
+
+    private void UpdateHiScore()
+    {
+        // if the score is greater than the hiscore
+        if (score > hiScore)
+        {
+            // update the hi score
+            hiScore = score;
+
+            playerHiScoreText.text = hiScore.ToString();
+        }
     }
 
 
     public void Lives()
     {
-        //score++;
-
-        //Debug.Log("SCORE: " + score);
-
         playerLivesText.text = lives.ToString();
     }
 
@@ -127,11 +217,13 @@ public class GameController : MonoBehaviour
     // if the player has clicked on a skull
     public void GameOver()
     {
-        // display game over
-        //Debug.Log("G A M E  O V E R");
-
         // stop playing game
-        gameIsActive = false;
+        gameOver = true;
+
+        inPlay = false;
+
+        // update the hi score
+        UpdateHiScore();
 
         // display the game over screen
         gameOverScreen.SetActive(true);

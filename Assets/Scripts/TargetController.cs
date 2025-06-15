@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-public class Target : MonoBehaviour
+public class TargetController : MonoBehaviour
 {
     // get a reference to the game controller script
     private GameController gameController;
@@ -57,13 +57,6 @@ public class Target : MonoBehaviour
 
         // spawn a new target
         NewTarget();
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
 
@@ -159,7 +152,7 @@ private void NewTarget()
     private void OnMouseDown()
     {
         // if the game is running
-        if (gameController.gameIsActive)
+        if (!gameController.gamePawzed && !gameController.gameOver)
         {
             // and the target is a good target
             if (gameObject.CompareTag("Good"))
